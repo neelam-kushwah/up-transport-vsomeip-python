@@ -1,0 +1,88 @@
+= Eclipse uProtocol Transport vsomeip python
+:toc:
+
+Python uPClient implementation for SOME/IP using vsomeip
+
+== Overview
+
+Python module to leverage someip implementations developed from other programming languages.
+
+
+== Getting Started
+
+=== Prerequisites
+Download, Build, and Install vsomeip - [COVESA / vsomeip](https://github.com/COVESA/vsomeip)
+for windows support: [COVESA / vsomeip (fork)](https://github.com/justinlhudson/vsomeip)
+
+==== Linux
+1. clone vsomeip repo https://github.com/COVESA/vsomeip.
+2. Follow Build instructions for Linux on the GitHubPage: https://github.com/COVESA/vsomeip
+	a. sudo apt-get install asciidoc source-highlight doxygen graphviz
+	b. sudo apt-get install libboost-all-dev
+	c. sudo apt install cmake
+3. open a terminal window at vsomeip directory.
+4. mkdir build
+5. cd build
+6. cmake ..
+7. make
+8. sudo make install
+
+[!TIP]
+'error' loading configuration module
+sudo ldconfig
+
+==== Windows
+1. Install boost - https://sourceforge.net/projects/boost/files/boost-binaries/1.65.0/boost_1_65_0-msvc-14.1-64.exe/download
+2. Install Visual Studio (any edition) - With Development with C++ options: https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-170
+3. Clone the forked vsomeip repo https://github.com/justinlhudson/vsomeip
+4. Open the local folder vsomeip in Visual Studio
+5. Right click on cmakeLists.txt and click Build - generates build files in a folder called out -> build -> x64-Debug (dll files)
+6. Right click on cmakeLists.txt and click Install
+7. Copy libs from build folder to Install Lib folder
+8. From Number 5, Rename x64-Debug folder to vsomeip and move it to C drive
+9. Copy dlls in C:\local\boost_1_65_0\lib64-msvc-14.1 to C:\Windows\System32
+10. Copy dlls in C:\Users\<vsomeip_cloned_path>\out\install\vsomeip\bin to C:\Windows\System32
+
+vsomeip Directory structure:
+----
+>      ├── vsomeip
+>      │   ├── bin
+>      │   ├── include
+>      │   ├── lib
+>      │   ├── etc
+>      │   ├── ...
+----
+
+
+=== Importing the up-client-vsomeip-python
+
+Set up up-client-vsomeip-python local repository and install
+[source]
+----
+$ git clone https://github.com/eclipse-uprotocol/up-client-vsomeip-python.git
+$ python setup.py bdist_wheel
+----
+*This will generate the wheel file to install/import for using vsomeip python client.*
+
+=== Usage
+
+$ pip install uprotocol_vsomeip_python-0.1.0.dev0-py3-none-any.whl
+
+uPClient vsomeip Transport
+
+[source]
+----
+from uprotocol_vsomeip.vsomeip_utransport import VsomeipTransport
+from uprotocol_vsomeip.vsomeip_utransport import VsomeipHelper
+
+# Create a helper class and override the services_info method to start the mock services by Vsomeip
+class Helper(VsomeipHelper):
+
+    def services_info(self) -> List[VsomeipHelper.UEntityInfo]:
+        return [VsomeipHelper.UEntityInfo(Name="entity", Id=1, Events=[0, 1, 2, 3, 4, 5, 6, 7, 8, 10], Port=30509, MajorVersion=1)]
+
+# Create an object of Vsomeip transport to use and pass on the above helper class created
+someip = VsomeipTransport(helper=Helper())
+----
+
+*Refer to Examples Folder to execute sample Publish, Subscribe and RPC functionalities*
